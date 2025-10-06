@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3 English Quiz Adventure</title>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #ffeb3b;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .question-area {
+            padding: 40px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .question-number {
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .timer {
+            background: #4ecdc4;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .timer.warning {
+            background: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            text-align: center;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .option:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .option.correct {
+            background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
+            animation: correctAnswer 0.6s ease;
+        }
+
+        .option.incorrect {
+            background: linear-gradient(45deg, #ff416c 0%, #ff4b2b 100%);
+            animation: shake 0.6s ease;
+        }
+
+        @keyframes correctAnswer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 40px;
+        }
+
+        .feedback.correct {
+            color: #27ae60;
+        }
+
+        .feedback.incorrect {
+            color: #e74c3c;
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            font-family: inherit;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .results {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .score {
+            font-size: 3rem;
+            color: #4facfe;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .celebration {
+            font-size: 4rem;
+            margin: 20px 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 25px;
+            font-size: 1.4rem;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .start-screen {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .start-screen h2 {
+            font-size: 2.2rem;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .start-btn {
+            background: linear-gradient(45deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+            border: none;
+            padding: 25px 50px;
+            border-radius: 25px;
+            font-size: 1.6rem;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .drag-drop-area {
+            background: #f8f9fa;
+            border: 3px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 80px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .drag-drop-area.drag-over {
+            border-color: #4facfe;
+            background: #e3f2fd;
+        }
+
+        .word-bank {
+            background: #fff3e0;
+            border: 2px solid #ffb74d;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .draggable-word {
+            background: linear-gradient(45deg, #ff9800 0%, #ffb74d 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: grab;
+            user-select: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .draggable-word:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .draggable-word:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .draggable-word.in-sentence {
+            background: linear-gradient(45deg, #4caf50 0%, #81c784 100%);
+        }
+
+        .check-sentence-btn {
+            background: linear-gradient(45deg, #2196f3 0%, #64b5f6 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .check-sentence-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .sentence-instruction {
+            font-size: 1.4rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="header">
+            <h1>🌟 Grade 3 English Quiz Adventure! 🌟</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div id="startScreen" class="start-screen">
+            <h2>🎯 Ready for an English Adventure? 🎯</h2>
+            <p style="font-size: 1.3rem; color: #666; margin-bottom: 30px;">
+                Answer 30 fun questions about English grammar!<br>
+                You have 20 seconds for each question (30 seconds for sentence building). Good luck! 🍀
+            </p>
+            <button class="start-btn" onclick="startQuiz()">🚀 Start Quiz!</button>
+        </div>
+
+        <div id="quizScreen" class="hidden">
+            <div class="question-area">
+                <div class="question-header">
+                    <div class="question-number" id="questionNumber">Question 1/21</div>
+                    <div class="timer" id="timer">20</div>
+                </div>
+                
+                <div class="question-text" id="questionText"></div>
+                
+                <div class="options" id="options"></div>
+                
+                <div class="feedback" id="feedback"></div>
+                
+                <button class="next-btn hidden" id="nextBtn" onclick="nextQuestion()">Next Question ➡️</button>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="results hidden">
+            <div class="celebration" id="celebrationEmoji">🎉</div>
+            <h2 id="resultTitle">Quiz Complete!</h2>
+            <div class="score" id="finalScore">0/27</div>
+            <p id="resultMessage" style="font-size: 1.4rem; color: #666;"></p>
+            <button class="restart-btn" onclick="restartQuiz()">🔄 Try Again!</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // A/An questions
+            {
+                question: "I have ____ eraser.",
+                options: ["a", "an"],
+                correct: 1,
+                type: "a/an"
+            },
+            {
+                question: "This is ____ pencil case.",
+                options: ["a", "an"],
+                correct: 0,
+                type: "a/an"
+            },
+            {
+                question: "Quang has ____ red pen.",
+                options: ["a", "an"],
+                correct: 0,
+                type: "a/an"
+            },
+            {
+                question: "I want ____ orange.",
+                options: ["a", "an"],
+                correct: 1,
+                type: "a/an"
+            },
+            
+            // Am/Is/Are questions
+            {
+                question: "She ____ Chi.",
+                options: ["am", "is", "are"],
+                correct: 1,
+                type: "be verbs"
+            },
+            {
+                question: "We ____ singing.",
+                options: ["am", "is", "are"],
+                correct: 2,
+                type: "be verbs"
+            },
+            {
+                question: "The cat ____ in the yard.",
+                options: ["am", "is", "are"],
+                correct: 1,
+                type: "be verbs"
+            },
+            {
+                question: "My mother ____ cooking in the kitchen.",
+                options: ["am", "is", "are"],
+                correct: 1,
+                type: "be verbs"
+            },
+            {
+                question: "____ this your ruler?",
+                options: ["Am", "Is", "Are"],
+                correct: 1,
+                type: "be verbs"
+            },
+            {
+                question: "____ these your notebooks?",
+                options: ["Am", "Is", "Are"],
+                correct: 2,
+                type: "be verbs"
+            },
+            
+            // Has/Have questions
+            {
+                question: "We ____ Math on Thursdays.",
+                options: ["has", "have"],
+                correct: 1,
+                type: "has/have"
+            },
+            {
+                question: "Nhi and Anh ____ Art on Wednesdays.",
+                options: ["has", "have"],
+                correct: 1,
+                type: "has/have"
+            },
+            {
+                question: "My brother ____ two black cats.",
+                options: ["has", "have"],
+                correct: 0,
+                type: "has/have"
+            },
+            {
+                question: "Do you ____ any birds?",
+                options: ["has", "have"],
+                correct: 1,
+                type: "has/have"
+            },
+            
+            // Verb forms
+            {
+                question: "I love ____.",
+                options: ["cat", "cats"],
+                correct: 1,
+                type: "verb forms"
+            },
+            {
+                question: "I don't like ____.",
+                options: ["dog", "dogs"],
+                correct: 1,
+                type: "verb forms"
+            },
+            {
+                question: "I like ____.",
+                options: ["dance", "dancing", "dances"],
+                correct: 1,
+                type: "verb forms"
+            },
+            {
+                question: "Please ____ your room.",
+                options: ["clean", "cleans", "cleaning"],
+                correct: 0,
+                type: "verb forms"
+            },
+            {
+                question: "Stop ____.",
+                options: ["play", "plays", "playing"],
+                correct: 2,
+                type: "verb forms"
+            },
+            
+            // Question words
+            {
+                question: "____ is your favorite color?",
+                options: ["What", "When", "Where", "Who"],
+                correct: 0,
+                type: "question words"
+            },
+            {
+                question: "____ do you have English?",
+                options: ["What", "When", "Where", "Who"],
+                correct: 1,
+                type: "question words"
+            },
+            {
+                question: "____ are you from?",
+                options: ["What", "When", "Where", "Who"],
+                correct: 2,
+                type: "question words"
+            },
+            {
+                question: "____ is your mother?",
+                options: ["What", "When", "Where", "Who"],
+                correct: 3,
+                type: "question words"
+            },
+            
+            // Sentence rearrangement
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["His", "favorite", "subject", "is", "Math", "."],
+                correctOrder: ["His", "favorite", "subject", "is", "Math", "."],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["What", "is", "your", "favorite", "color", "?"],
+                correctOrder: ["What", "is", "your", "favorite", "color", "?"],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["Are", "these", "your", "notebooks", "?"],
+                correctOrder: ["Are", "these", "your", "notebooks", "?"],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["Phong", "has", "Music", "on", "Tuesdays", "and", "Fridays", "."],
+                correctOrder: ["Phong", "has", "Music", "on", "Tuesdays", "and", "Fridays", "."],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["My", "brother", "is", "playing", "in", "the", "living", "room", "."],
+                correctOrder: ["My", "brother", "is", "playing", "in", "the", "living", "room", "."],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["My", "mother", "is", "cleaning", "in", "the", "kitchen", "."],
+                correctOrder: ["My", "mother", "is", "cleaning", "in", "the", "kitchen", "."],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["How", "old", "are", "you", "?"],
+                correctOrder: ["How", "old", "are", "you", "?"],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["What", "is", "she", "doing", "?"],
+                correctOrder: ["What", "is", "she", "doing", "?"],
+                type: "drag-drop"
+            },
+            {
+                question: "Drag the words to make a correct sentence:",
+                words: ["There", "are", "five", "people", "in", "my", "family", "."],
+                correctOrder: ["There", "are", "five", "people", "in", "my", "family", "."],
+                type: "drag-drop"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 20;
+        let timer;
+        let answered = false;
+
+        function startQuiz() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            showQuestion();
+            startTimer();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1}/30`;
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            if (question.type === 'drag-drop') {
+                // Create drag and drop interface
+                optionsContainer.innerHTML = `
+                    <div class="sentence-instruction">Drag the words below to form a sentence:</div>
+                    <div class="drag-drop-area" id="dropArea">
+                        <span style="color: #999; font-style: italic;">Drop words here to build your sentence</span>
+                    </div>
+                    <div class="word-bank" id="wordBank"></div>
+                    <button class="check-sentence-btn" id="checkBtn" onclick="checkSentence()">Check My Sentence</button>
+                `;
+                
+                const wordBank = document.getElementById('wordBank');
+                const shuffledWords = [...question.words].sort(() => Math.random() - 0.5);
+                
+                shuffledWords.forEach((word, index) => {
+                    const wordElement = document.createElement('div');
+                    wordElement.className = 'draggable-word';
+                    wordElement.textContent = word;
+                    wordElement.draggable = true;
+                    wordElement.dataset.word = word;
+                    wordElement.dataset.originalIndex = index;
+                    
+                    wordElement.addEventListener('dragstart', handleDragStart);
+                    wordBank.appendChild(wordElement);
+                });
+                
+                setupDropArea();
+            } else {
+                // Regular multiple choice questions
+                question.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'option';
+                    button.textContent = option;
+                    button.onclick = () => selectAnswer(index);
+                    optionsContainer.appendChild(button);
+                });
+            }
+            
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('nextBtn').classList.add('hidden');
+            
+            // Update progress bar
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            
+            answered = false;
+            timeLeft = question.type === 'drag-drop' ? 30 : 20;
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            const timerElement = document.getElementById('timer');
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 5) {
+                    timerElement.classList.add('warning');
+                } else {
+                    timerElement.classList.remove('warning');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (!answered) {
+                        timeUp();
+                    }
+                }
+            }, 1000);
+        }
+
+        function selectAnswer(selectedIndex) {
+            if (answered) return;
+            
+            answered = true;
+            clearInterval(timer);
+            
+            const question = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            
+            if (selectedIndex === question.correct) {
+                score++;
+                options[selectedIndex].classList.add('correct');
+                feedback.textContent = getCorrectFeedback();
+                feedback.className = 'feedback correct';
+                playSuccessSound();
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                options[question.correct].classList.add('correct');
+                feedback.textContent = getIncorrectFeedback();
+                feedback.className = 'feedback incorrect';
+            }
+            
+            // Disable all options
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+            });
+            
+            setTimeout(() => {
+                document.getElementById('nextBtn').classList.remove('hidden');
+            }, 1500);
+        }
+
+        function timeUp() {
+            answered = true;
+            const question = questions[currentQuestion];
+            const feedback = document.getElementById('feedback');
+            
+            if (question.type === 'drag-drop') {
+                feedback.textContent = `⏰ Time's up! Correct order: ${question.correctOrder.join(' ')}`;
+                feedback.className = 'feedback incorrect';
+                
+                const dropArea = document.getElementById('dropArea');
+                dropArea.style.border = '3px solid #f44336';
+                dropArea.style.background = '#ffebee';
+                
+                const checkBtn = document.getElementById('checkBtn');
+                if (checkBtn) checkBtn.style.display = 'none';
+                
+                // Disable all interactions
+                const draggableWords = document.querySelectorAll('.draggable-word');
+                draggableWords.forEach(word => {
+                    word.draggable = false;
+                    word.style.cursor = 'default';
+                    word.style.pointerEvents = 'none';
+                });
+                
+                const sentenceWords = document.querySelectorAll('.in-sentence');
+                sentenceWords.forEach(word => {
+                    word.style.pointerEvents = 'none';
+                });
+            } else {
+                const options = document.querySelectorAll('.option');
+                options[question.correct].classList.add('correct');
+                feedback.textContent = "⏰ Time's up! The correct answer is highlighted.";
+                feedback.className = 'feedback incorrect';
+                
+                options.forEach(option => {
+                    option.style.pointerEvents = 'none';
+                });
+            }
+            
+            setTimeout(() => {
+                document.getElementById('nextBtn').classList.remove('hidden');
+            }, 2000);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('finalScore').textContent = `${score}/${questions.length}`;
+            
+            let title, message, emoji;
+            
+            if (percentage >= 90) {
+                title = "🌟 EXCELLENT! 🌟";
+                message = "You're an English superstar! Amazing work!";
+                emoji = "🏆";
+            } else if (percentage >= 80) {
+                title = "🎉 GREAT JOB! 🎉";
+                message = "You did really well! Keep up the good work!";
+                emoji = "⭐";
+            } else if (percentage >= 70) {
+                title = "👍 GOOD EFFORT! 👍";
+                message = "Nice try! You're getting better at English!";
+                emoji = "😊";
+            } else if (percentage >= 60) {
+                title = "💪 KEEP TRYING! 💪";
+                message = "Good start! Practice more and you'll improve!";
+                emoji = "📚";
+            } else {
+                title = "🌱 KEEP LEARNING! 🌱";
+                message = "Don't give up! Every mistake helps you learn!";
+                emoji = "🤗";
+            }
+            
+            document.getElementById('resultTitle').textContent = title;
+            document.getElementById('resultMessage').textContent = message;
+            document.getElementById('celebrationEmoji').textContent = emoji;
+            
+            // Update progress bar to 100%
+            document.getElementById('progressFill').style.width = '100%';
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden');
+            document.getElementById('progressFill').style.width = '0%';
+        }
+
+        function getCorrectFeedback() {
+            const messages = [
+                "🎉 Excellent!",
+                "⭐ Great job!",
+                "👏 Wonderful!",
+                "🌟 Perfect!",
+                "🎯 Amazing!",
+                "💫 Fantastic!",
+                "🏆 Brilliant!"
+            ];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function getIncorrectFeedback() {
+            const messages = [
+                "💪 Keep trying!",
+                "🌱 Almost there!",
+                "📚 Good effort!",
+                "🤗 Try again!",
+                "⭐ You're learning!",
+                "🎯 Close one!"
+            ];
+            return messages[Math.floor(Math.random() * messages.length)];
+        }
+
+        function playSuccessSound() {
+            // Visual celebration effect
+            const feedback = document.getElementById('feedback');
+            feedback.style.animation = 'bounce 0.6s ease';
+            setTimeout(() => {
+                feedback.style.animation = '';
+            }, 600);
+        }
+
+        let draggedElement = null;
+
+        function handleDragStart(e) {
+            draggedElement = e.target;
+            e.target.style.opacity = '0.5';
+        }
+
+        function setupDropArea() {
+            const dropArea = document.getElementById('dropArea');
+            
+            dropArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropArea.classList.add('drag-over');
+            });
+            
+            dropArea.addEventListener('dragleave', () => {
+                dropArea.classList.remove('drag-over');
+            });
+            
+            dropArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropArea.classList.remove('drag-over');
+                
+                if (draggedElement) {
+                    // Remove placeholder text if it exists
+                    const placeholder = dropArea.querySelector('span');
+                    if (placeholder) {
+                        placeholder.remove();
+                    }
+                    
+                    // Clone the dragged element
+                    const clonedElement = draggedElement.cloneNode(true);
+                    clonedElement.classList.add('in-sentence');
+                    clonedElement.draggable = false;
+                    
+                    // Add click to remove functionality
+                    clonedElement.addEventListener('click', () => {
+                        clonedElement.remove();
+                        draggedElement.style.display = 'block';
+                        
+                        // Add placeholder back if no words left
+                        if (dropArea.children.length === 0) {
+                            dropArea.innerHTML = '<span style="color: #999; font-style: italic;">Drop words here to build your sentence</span>';
+                        }
+                    });
+                    
+                    dropArea.appendChild(clonedElement);
+                    draggedElement.style.display = 'none';
+                    draggedElement.style.opacity = '1';
+                    draggedElement = null;
+                }
+            });
+        }
+
+        function checkSentence() {
+            if (answered) return;
+            
+            const dropArea = document.getElementById('dropArea');
+            const wordsInSentence = Array.from(dropArea.children)
+                .filter(child => child.classList.contains('in-sentence'))
+                .map(child => child.textContent);
+            
+            if (wordsInSentence.length === 0) {
+                alert('Please drag some words to make a sentence first!');
+                return;
+            }
+            
+            const question = questions[currentQuestion];
+            const isCorrect = JSON.stringify(wordsInSentence) === JSON.stringify(question.correctOrder);
+            
+            answered = true;
+            clearInterval(timer);
+            
+            const feedback = document.getElementById('feedback');
+            const checkBtn = document.getElementById('checkBtn');
+            
+            if (isCorrect) {
+                score++;
+                feedback.textContent = getCorrectFeedback();
+                feedback.className = 'feedback correct';
+                dropArea.style.border = '3px solid #4caf50';
+                dropArea.style.background = '#e8f5e8';
+                playSuccessSound();
+            } else {
+                feedback.textContent = `${getIncorrectFeedback()} Correct order: ${question.correctOrder.join(' ')}`;
+                feedback.className = 'feedback incorrect';
+                dropArea.style.border = '3px solid #f44336';
+                dropArea.style.background = '#ffebee';
+            }
+            
+            checkBtn.style.display = 'none';
+            
+            // Disable dragging and clicking
+            const draggableWords = document.querySelectorAll('.draggable-word');
+            draggableWords.forEach(word => {
+                word.draggable = false;
+                word.style.cursor = 'default';
+                word.style.pointerEvents = 'none';
+            });
+            
+            const sentenceWords = document.querySelectorAll('.in-sentence');
+            sentenceWords.forEach(word => {
+                word.style.pointerEvents = 'none';
+            });
+            
+            setTimeout(() => {
+                document.getElementById('nextBtn').classList.remove('hidden');
+            }, 1500);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98a3d56701e725e5',t:'MTc1OTczOTgxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
